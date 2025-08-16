@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descontaminação Mental - Diagnóstico de Cultura Organizacional</title>
+    <meta name="description" content="Descubra se a cultura da sua empresa é um ativo estratégico ou um passivo oculto com nosso diagnóstico gratuito.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        html, body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0D1117;
+            color: #E6EDF3;
+            width: 100%;
+            overflow-x: hidden; /* Impede a rolagem horizontal e corrige o layout */
+        }
+       .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+       }
+       .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+       }
+       .brand-orange {
+            background-color: #ff9929;
+            color: #0D1117;
+       }
+       .brand-orange:hover {
+            background-color: #ffaf5a;
+       }
+       /* Estilos para as animações com GSAP */
+       .gsap-reveal {
+            opacity: 0;
+            transform: translateY(40px);
+       }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="overflow-x-hidden">
+
+    <header class="container mx-auto px-6 pt-12 pb-4 flex justify-center items-center">
+        <!-- Logo do Programa "Descontaminação Mental" - Centralizado e Ampliado -->
+        <img src="{{ url_for('static', filename='images/Programa.png') }}" alt="Logo Descontaminação Mental" class="h-20 md:h-24">
+    </header>
+
+    <main>
+        <section class="text-center pt-8 pb-12 md:pt-12 md:pb-16 px-6">
+            <div class="container mx-auto">
+                <h2 class="gsap-reveal text-4xl md:text-6xl font-bold leading-tight tracking-tighter mb-4">A Cultura da Sua Empresa:</h2>
+                <h3 class="gsap-reveal text-4xl md:text-6xl font-bold text-[#ff9929] leading-tight tracking-tighter mb-8">Ativo Estratégico ou Passivo Oculto?</h3>
+                <p class="gsap-reveal max-w-3xl mx-auto text-lg md:text-xl text-gray-400 mb-12">Muitas organizações não percebem que uma cultura desalinhada é a raiz de seus maiores desafios. Descubra os pontos cegos e transforme sua cultura em uma vantagem competitiva real.</p>
+                <a href="{{ url_for('main.diagnostico') }}" class="gsap-reveal inline-block brand-orange font-bold py-4 px-10 rounded-lg text-lg transition-transform transform hover:scale-105 shadow-lg shadow-[#ff9929]/20">
+                    Receber Meu Diagnóstico de Cultura Gratuito
+                </a>
+            </div>
+        </section>
+
+        <section class="pt-12 pb-16 px-6">
+            <div class="container mx-auto">
+                <h2 class="gsap-reveal text-3xl md:text-4xl font-bold text-center mb-4">Sinais de uma Cultura em Risco</h2>
+                <p class="gsap-reveal max-w-2xl mx-auto text-center text-gray-400 mb-16">Sua empresa está enfrentando algum destes desafios?</p>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="gsap-reveal glass-card p-8 rounded-2xl text-center">
+                        <h3 class="text-2xl font-bold mb-4">Baixo Engajamento</h3>
+                        <p class="text-gray-400">Equipes apáticas, falta de iniciativa e a sensação de que todos estão apenas "cumprindo tabela". Um sintoma clássico de desconexão.</p>
+                    </div>
+                    <div class="gsap-reveal glass-card p-8 rounded-2xl text-center">
+                        <h3 class="text-2xl font-bold mb-4">Alta Rotatividade</h3>
+                        <p class="text-gray-400">Perda constante de talentos, mesmo após investimentos em contratação. O problema pode não estar em quem chega, mas no ambiente que encontram.</p>
+                    </div>
+                    <div class="gsap-reveal glass-card p-8 rounded-2xl text-center">
+                        <h3 class="text-2xl font-bold mb-4">Conflitos Frequentes</h3>
+                        <p class="text-gray-400">Desentendimentos constantes, silos entre as áreas, e um ambiente de fofoca e desconfiança que mina a colaboração e a produtividade.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="pt-12 pb-16 px-6">
+            <div class="container mx-auto">
+                <h2 class="gsap-reveal text-3xl md:text-4xl font-bold text-center mb-16">Empresas que Transformaram sua Cultura</h2>
+                <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Depoimento 1 -->
+                    <div class="gsap-reveal glass-card p-8 rounded-2xl">
+                        <p class="text-gray-300 mb-6 text-lg italic">"O diagnóstico foi um divisor de águas. Vimos claramente onde estávamos falhando em comunicação e, com as ações certas, o clima da equipe mudou da água para o vinho."</p>
+                        <div>
+                            <p class="font-bold text-white">Joana Silva</p>
+                            <p class="text-sm text-gray-400">CEO, InovaTech</p>
+                        </div>
+                    </div>
+                    <!-- Depoimento 2 -->
+                    <div class="gsap-reveal glass-card p-8 rounded-2xl">
+                        <p class="text-gray-300 mb-6 text-lg italic">"Achávamos que nosso problema era salário, mas a ferramenta mostrou que a falta de reconhecimento era o que mais desmotivava. Uma mudança simples que reduziu nossa rotatividade em 40%."</p>
+                        <div>
+                            <p class="font-bold text-white">Ricardo Mendes</p>
+                            <p class="text-sm text-gray-400">Diretor de RH, Construtora Aliança</p>
+                        </div>
+                    </div>
+                    <!-- Depoimento 3 -->
+                    <div class="gsap-reveal glass-card p-8 rounded-2xl">
+                        <p class="text-gray-300 mb-6 text-lg italic">"Ferramenta essencial para qualquer PME. Rápida, intuitiva e os insights são extremamente acionáveis. Recomendo para todos os gestores que sentem que 'algo está errado' mas não sabem o quê."</p>
+                        <div>
+                            <p class="font-bold text-white">Carla Faria</p>
+                            <p class="text-sm text-gray-400">Sócia-fundadora, Veloce Logística</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pt-12 pb-16 px-6">
+            <div class="container mx-auto text-center">
+                <h2 class="gsap-reveal text-3xl md:text-4xl font-bold mb-6">Pronto para Descontaminar sua Cultura?</h2>
+                <p class="gsap-reveal max-w-2xl mx-auto text-gray-400 mb-10">O primeiro passo para a cura é o diagnóstico. Nossa ferramenta gratuita e 100% online te dará a clareza necessária para começar a transformação.</p>
+                <a href="{{ url_for('main.diagnostico') }}" class="gsap-reveal inline-block brand-orange font-bold py-4 px-10 rounded-lg text-lg transition-transform transform hover:scale-105 shadow-lg shadow-[#ff9929]/20">
+                    Iniciar Diagnóstico Gratuito Agora
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-900/50 border-t border-white/10 mt-20">
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid md:grid-cols-3 gap-8 text-center md:text-left">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Descontaminação Mental</h3>
+                    <p class="text-gray-400 text-sm">Uma ferramenta da Movemind para ajudar PMEs a construir culturas mais fortes e resultados extraordinários.</p>
+                     <div class="mt-6">
+                        <a href="https://movemind.pro" target="_blank" rel="noopener noreferrer">
+                            <img src="{{ url_for('static', filename='images/LOGO_MOVEMIND.png') }}" alt="Logo Movemind" class="h-10 mx-auto md:mx-0 mb-4 opacity-70 hover:opacity-100 transition-opacity">
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Navegação</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{{ url_for('main.landing') }}" class="text-gray-400 hover:text-[#ff9929]">Início</a></li>
+                        <li><a href="{{ url_for('main.diagnostico') }}" class="text-gray-400 hover:text-[#ff9929]">Fazer Diagnóstico</a></li>
+                        <li><a href="https://movemind.pro" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#ff9929]">Sobre a Movemind</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Legal</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-400 hover:text-[#ff9929]">Política de Privacidade</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-[#ff9929]">Termos de Serviço</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-12 border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+                <p>&copy; 2025 Movemind. Todos os direitos reservados.</p>
+                <div class="flex items-center space-x-6 mt-4 md:mt-0">
+                    <a href="https://www.instagram.com/movemindpro/" target="_blank" rel="noopener noreferrer" aria-label="Instagram da Movemind" class="hover:text-[#ff9929] transition-colors">
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44 1.441-.645 1.441-1.44-.645-1.44-1.441-1.44z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    </div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.utils.toArray('.gsap-reveal').forEach(item => {
+            gsap.fromTo(item, 
+                { y: 40, opacity: 0 }, 
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 1,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: item,
+                        start: "top 85%",
+                        toggleActions: "play none none none"
+                    }
+                }
+            );
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Diagnóstico de Cultura - {{ user_info.company }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- For icons -->
+    <style>
+        /* --- Estilos Base e de Marca --- */
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #f8fafc; /* Cor de fundo principal */
+            color: #334155; /* Cor do texto principal */
+            -webkit-print-color-adjust: exact; 
+            print-color-adjust: exact; 
+        }
+        .brand-gradient-bg { background: linear-gradient(135deg, #0D1117 0%, #1E293B 100%); }
+        .brand-text { color: #ff9929; }
+        .section { page-break-inside: avoid; }
+
+        /* --- Estilos da Capa --- */
+        .page-cover { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            min-height: 100vh; 
+            background: linear-gradient(135deg, #0D1117 0%, #1E293B 100%); 
+            color: #f8fafc; 
+            padding: 2rem 4rem; 
+            text-align: center; 
+        }
+
+        /* --- Estilos dos Componentes do Relatório --- */
+        .action-plan-card { border-left-width: 4px; }
+        .swot-grid > div { background-color: #f1f5f9; border-left-width: 4px; padding: 1.5rem; border-radius: 0.5rem; }
+        .case-study-card { background-color: #f1f5f9; border: 1px solid #e2e8f0; transition: box-shadow 0.3s ease; }
+        .case-study-card:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        
+        /* --- Estilos do Agendador Interativo --- */
+        .scheduler { transition: opacity 0.5s ease, max-height 0.5s ease; max-height: 1000px; opacity: 1; }
+        .date-btn { background-color: #e2e8f0; border: 2px solid transparent; }
+        .date-btn.selected { background-color: #1e293b; color: #f8fafc; border-color: #1e293b; font-weight: 600; }
+        .time-btn {
+            background-color: #1e293b;
+            color: white;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+        }
+        .time-btn:hover {
+            background-color: #ff9929;
+            color: #1e293b;
+        }
+        .time-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* --- Estilos do Modal de Confirmação --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            width: 90%;
+            max-width: 500px;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+
+        /* --- Estilos do Cupão --- */
+        .coupon-card {
+            background: #fff;
+            border: 2px dashed #e2e8f0;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 0.75rem;
+            position: relative;
+        }
+        .coupon-code {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 0.5rem 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            border-radius: 0.5rem;
+            display: inline-block;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        @media print {
+            body { background-color: #ffffff; }
+            .page-cover { height: 90vh; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="max-w-4xl mx-auto">
+
+        <!-- =============================================================== -->
+        <!-- 1. CAPA DO RELATÓRIO                                            -->
+        <!-- =============================================================== -->
+        <div class="page-cover section">
+            <div>
+                <img src="{{ url_for('static', filename='images/cabecalhorelatorio.png') }}" alt="Cabeçalho do Relatório" class="w-full mb-8">
+                <h1 class="text-4xl md:text-5xl font-extrabold">Diagnóstico de Cultura Organizacional</h1>
+                <p class="mt-4 text-xl text-slate-300">Um Raio-X Estratégico da Sua Empresa</p>
+            </div>
+            <div>
+                <p class="text-lg font-semibold">Preparado para</p>
+                <p class="text-2xl font-bold brand-text">{{ user_info.name }}</p>
+                <p class="text-lg font-semibold mt-2">da Empresa</p>
+                <p class="text-2xl font-bold brand-text">{{ user_info.company }}</p>
+                <p class="mt-12 text-sm text-slate-400">Relatório gerado em: {{ generation_date }}</p>
+            </div>
+        </div>
+
+        <div class="bg-white p-8 md:p-12 space-y-16">
+
+            <!-- =============================================================== -->
+            <!-- 2. DASHBOARD DE CULTURA (GRÁFICOS)                              -->
+            <!-- =============================================================== -->
+            <div class="section">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">O Seu Dashboard de Cultura</h2>
+                <p class="text-slate-600 mb-8">Uma visão geral e instantânea das 7 dimensões da sua cultura organizacional.</p>
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        {% if radar_chart_b64 %}
+                            <img src="data:image/png;base64,{{ radar_chart_b64 }}" alt="Gráfico de Radar das Dimensões Culturais">
+                        {% else %}
+                            <div class="w-full h-80 bg-slate-100 flex items-center justify-center rounded-lg"><p>Gráfico indisponível.</p></div>
+                        {% endif %}
+                    </div>
+                    <div class="flex flex-col gap-5">
+                        {% for dim, score in scores.items() %}
+                        <div>
+                            <div class="flex justify-between mb-1"><span class="font-semibold text-slate-600">{{ dim }}</span><span class="font-bold text-slate-800">{{ "%.1f"|format(score) }} / 10</span></div>
+                            <div class="w-full bg-slate-200 rounded-full h-2.5"><div class="bg-[#ff9929] h-2.5 rounded-full" style="width: {{ score * 10 }}%;"></div></div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================================================== -->
+            <!-- 3. PLANO DE AÇÃO FOCADO (COMENTÁRIO)                            -->
+            <!-- =============================================================== -->
+            {% if intelligent_content and intelligent_content.action_plan %}
+            <div class="section brand-gradient-bg text-white p-8 md:p-10 rounded-lg shadow-lg">
+                <h2 class="text-3xl font-bold text-white border-b-2 border-[#ff9929] pb-2 mb-6">Seu Plano de Ação Focado</h2>
+                <p class="text-slate-300 mb-8 text-lg">Para gerar o máximo impacto, recomendamos focar na sua maior força e na sua maior oportunidade.</p>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Ponto Forte -->
+                    <div class="action-plan-card border-green-400 bg-slate-800/50 p-6 rounded-lg">
+                        <h3 class="text-2xl font-bold flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-400"><path d="M12 5l0 14"/><path d="M18 11l-6 -6"/><path d="M6 11l6 -6"/></svg> Alavancar sua Força: {{ intelligent_content.action_plan.strongest.dimension }}</h3>
+                        <div class="mt-4 pl-4 border-l-2 border-slate-700">
+                            <h4 class="font-semibold text-[#ff9929]">Diagnóstico:</h4>
+                            <p class="text-slate-300 mb-4">{{ intelligent_content.action_plan.strongest.analysis }}</p>
+                            <h4 class="font-semibold text-[#ff9929]">Ação Recomendada:</h4>
+                            <p class="text-slate-300">{{ intelligent_content.action_plan.strongest.action }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Ponto Fraco -->
+                    <div class="action-plan-card border-red-400 bg-slate-800/50 p-6 rounded-lg">
+                        <h3 class="text-2xl font-bold flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-400"><path d="M12 5l0 14"/><path d="M18 13l-6 6"/><path d="M6 13l6 6"/></svg> Desenvolver sua Oportunidade: {{ intelligent_content.action_plan.weakest.dimension }}</h3>
+                        <div class="mt-4 pl-4 border-l-2 border-slate-700">
+                            <h4 class="font-semibold text-[#ff9929]">Diagnóstico:</h4>
+                            <p class="text-slate-300 mb-4">{{ intelligent_content.action_plan.weakest.analysis }}</p>
+                            <h4 class="font-semibold text-[#ff9929]">Ação Recomendada:</h4>
+                            <p class="text-slate-300">{{ intelligent_content.action_plan.weakest.action }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- =============================================================== -->
+            <!-- 4. ANÁLISE SWOT                                                 -->
+            <!-- =============================================================== -->
+            {% if swot and (swot['swot-strengths'] or swot['swot-weaknesses'] or swot['swot-opportunities'] or swot['swot-threats']) %}
+            <div class="section">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">A Sua Análise SWOT</h2>
+                <p class="text-slate-600 mb-6">A sua percepção sobre as Forças, Fraquezas, Oportunidades e Ameaças da sua cultura.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 swot-grid">
+                    <div style="border-color: #22c55e;"><h3 class="font-bold text-xl mb-2 text-green-600">Forças</h3><p class="text-slate-700 italic">"{{ swot['swot-strengths'] or 'Não preenchido' }}"</p></div>
+                    <div style="border-color: #ef4444;"><h3 class="font-bold text-xl mb-2 text-red-600">Fraquezas</h3><p class="text-slate-700 italic">"{{ swot['swot-weaknesses'] or 'Não preenchido' }}"</p></div>
+                    <div style="border-color: #3b82f6;"><h3 class="font-bold text-xl mb-2 text-blue-600">Oportunidades</h3><p class="text-slate-700 italic">"{{ swot['swot-opportunities'] or 'Não preenchido' }}"</p></div>
+                    <div style="border-color: #f59e0b;"><h3 class="font-bold text-xl mb-2 text-amber-600">Ameaças</h3><p class="text-slate-700 italic">"{{ swot['swot-threats'] or 'Não preenchido' }}"</p></div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- =============================================================== -->
+            <!-- 5. ANÁLISE DA IA                                                -->
+            <!-- =============================================================== -->
+            {% if intelligent_content and intelligent_content.ai_narrative %}
+            <div class="section">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Análise Aprofundada da IA</h2>
+                <p class="text-slate-500 mb-8">Para justificar o plano de ação, a nossa IA analisou a causa raiz do seu maior desafio.</p>
+                <div class="bg-amber-50 border-l-4 border-amber-400 p-6 rounded-r-lg shadow-sm mb-8">
+                    <h3 class="font-bold text-xl text-amber-800 mb-2">A Conexão Oculta:</h3>
+                    <p class="text-lg text-slate-700" style="white-space: pre-wrap;">"{{ intelligent_content.ai_narrative }}"</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- =============================================================== -->
+            <!-- 6. AGENDAMENTO ESTRATÉGICO                                      -->
+            <!-- =============================================================== -->
+            <div id="agendamento" class="section text-center no-print pt-10 border-t-2 border-dashed border-slate-200">
+                <h2 class="text-3xl font-bold text-slate-800">Agende a Sua Sessão Estratégica</h2>
+                <p class="text-slate-500 mt-2 mb-8">A sessão é gratuita, online e tem a duração de 1 hora.</p>
+                <a href="{{ cal_link_ext }}" target="_blank" rel="noopener" class="inline-block bg-[#ff9929] text-white font-bold py-3 px-6 rounded-lg hover:bg-amber-600 transition-colors">Fazer meu agendamento</a>
+            </div>
+            
+            <!-- =============================================================== -->
+            <!-- 7. SOBRE O MENTOR                                               -->
+            <!-- =============================================================== -->
+            <div class="section">
+                 <h2 class="text-3xl font-bold text-slate-800 mb-8 text-center">O Seu Mentor</h2>
+                 <div class="flex flex-col sm:flex-row items-center gap-8 bg-slate-100 p-8 rounded-lg">
+                    {% if consultant_b64 %}
+                        <img src="data:image/jpeg;base64,{{ consultant_b64 }}" alt="Foto de Breno Peixoto Cortez" class="w-40 h-40 rounded-full object-cover border-4 border-white shadow-md flex-shrink-0">
+                    {% else %}
+                        <img src="https://placehold.co/160x160/E2E8F0/334155?text=Breno" alt="Foto de Breno Peixoto Cortez" class="w-40 h-40 rounded-full object-cover border-4 border-white shadow-md flex-shrink-0">
+                    {% endif %}
+                    <div class="text-slate-600 text-center sm:text-left">
+                        <h3 class="text-2xl font-bold text-slate-800">Breno Peixoto Cortez</h3>
+                        <p class="mt-2">Doutorando em Engenharia, Mestre em Engenharia de Produção e Pós-Graduado em Gestão de Projetos. Com certificações internacionais como Coach e Analista DISC, atua como Mentor e consultor em processos, planeamento estratégico e gestão organizacional, com vasta experiência como Professor Universitário e em projetos no setor de Petróleo e Gás Natural.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================================================== -->
+            <!-- 8. CONTINUE A JORNADA & CUPOM                                   -->
+            <!-- =============================================================== -->
+            <div class="section text-center py-16 no-print">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">Continue a sua Jornada</h2>
+                <div class="max-w-2xl mx-auto border-2 border-dashed border-slate-300 rounded-lg p-8">
+                    <h3 class="text-2xl font-bold text-slate-800">Um presente para si!</h3>
+                    <p class="text-slate-500 mt-2 mb-6">Use este cupão para obter 50% de desconto em qualquer curso ou workshop da Movemind.</p>
+                    <div class="flex justify-center items-center gap-2">
+                        <div id="coupon-code" class="bg-slate-100 text-slate-800 font-mono py-3 px-6 rounded-lg">CULTURA2025</div>
+                        <button id="copy-coupon-btn" class="bg-[#ff9929] text-white font-bold py-3 px-6 rounded-lg hover:bg-amber-600 transition-colors">Copiar Cupão</button>
+                    </div>
+                    <div id="copy-feedback" class="text-green-600 mt-2 text-sm font-semibold hidden">Cupão copiado!</div>
+                </div>
+                <div class="mt-12">
+                    <p class="text-sm text-slate-400 mb-2">Uma iniciativa</p>
+                    <a href="https://www.movemind.pro" target="_blank" rel="noopener noreferrer">
+                        <img src="{{ url_for('static', filename='images/LOGO_MOVEMIND.png') }}" alt="Logo Movemind" class="h-12 mx-auto">
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        
+        <footer class="text-center mt-8 py-6 border-t border-slate-200">
+            <a href="https://movemind.pro" target="_blank" rel="noopener noreferrer"><img src="https://i.imgur.com/gYf2m3j.png" alt="Logo Movemind" class="h-10 mx-auto mb-4" onerror="this.onerror=null; this.src='https://placehold.co/150x40/FFFFFF/000000?text=Movemind';"></a>
+            <p class="text-slate-500 text-sm">&copy; 2025 Movemind. Todos os direitos reservados.</p>
+        </footer>
+    </div>
+
+    <!-- =============================================================== -->
+    <!-- MODAL DE CONFIRMAÇÃO DE AGENDAMENTO                             -->
+    <!-- =============================================================== -->
+    <div id="confirmation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold text-slate-800 mb-4">Confirmar Agendamento</h2>
+            <p class="text-slate-600 mb-2">Você está a agendar a sua sessão para:</p>
+            <p class="text-lg font-semibold text-slate-900 mb-6" id="modal-slot-details"></p>
+            <div class="mb-6">
+                <label for="modal-email" class="block text-sm font-medium text-slate-700 mb-1">Confirmar e-mail para o convite:</label>
+            </div>
+        </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- DADOS INICIAIS E VARIÁVEIS GLOBAIS ---
+        const userInfo = {{ user_info|tojson|safe }};
+        const availableSlots = {{ availability|default({})|tojson|safe }};
+        let selectedSlot = null;
+
+        // --- ELEMENTOS DO DOM ---
+        const dateColumn = document.getElementById('date-column');
+        const timeColumn = document.getElementById('time-column');
+        const timePlaceholder = document.getElementById('time-placeholder');
+        const schedulerPanel = document.getElementById('scheduler-panel');
+        const successPanel = document.getElementById('success-panel');
+        
+        const modal = document.getElementById('confirmation-modal');
+        const modalSlotDetails = document.getElementById('modal-slot-details');
+        const modalEmailInput = document.getElementById('modal-email');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const modalError = document.getElementById('modal-error');
+        const confirmBtnText = document.getElementById('confirm-btn-text');
+        const confirmBtnSpinner = document.getElementById('confirm-btn-spinner');
+
+        const copyCouponBtn = document.getElementById('copy-coupon-btn');
+        const couponCodeEl = document.getElementById('coupon-code');
+        const copyFeedbackEl = document.getElementById('copy-feedback');
+
+        // --- FUNÇÕES DO MODAL DE AGENDAMENTO ---
+        function showModal(slot, dayName, dateStr) {
+            selectedSlot = { ...slot, date: dateStr };
+            const dateObj = new Date(dateStr + 'T00:00:00');
+            const friendlyDate = dateObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'long'});
+            modalSlotDetails.textContent = `${dayName}, ${friendlyDate} às ${slot.time_str}`;
+            if(modalEmailInput) modalEmailInput.value = userInfo.email;
+            if(modalError) modalError.classList.add('hidden');
+            if(modal) modal.classList.add('visible');
+        }
+
+        function hideModal() {
+            if(modal) modal.classList.remove('visible');
+            selectedSlot = null;
+        }
+
+        function setModalLoading(isLoading) {
+            if(modalConfirmBtn) modalConfirmBtn.disabled = isLoading;
+            if (isLoading) {
+                if(confirmBtnText) confirmBtnText.classList.add('hidden');
+                if(confirmBtnSpinner) confirmBtnSpinner.classList.remove('hidden');
+            } else {
+                if(confirmBtnText) confirmBtnText.classList.remove('hidden');
+                if(confirmBtnSpinner) confirmBtnSpinner.classList.add('hidden');
+            }
+        }
+
+        // --- LÓGICA DE RENDERIZAÇÃO DO AGENDADOR ---
+        function renderDates() {
+            if (!dateColumn || !availableSlots || Object.keys(availableSlots).length === 0) {
+                if(schedulerPanel) schedulerPanel.innerHTML = `
+                    <div class="text-center py-8">
+                        <p class="text-slate-600 mb-6">Não há horários de mentoria disponíveis no momento pelo sistema interno.</p>
+                        <a href="{{ cal_link_ext }}" target="_blank" rel="noopener" class="inline-block bg-[#ff9929] text-white font-bold py-3 px-6 rounded-lg hover:bg-amber-600 transition-colors">Fazer meu agendamento</a>
+                    </div>
+                `;
+                return;
+            }
+
+            dateColumn.innerHTML = Object.entries(availableSlots).map(([dateKey, dayData]) => {
+                 return `<button data-date="${dateKey}" class="date-btn w-full text-left p-3 rounded-lg"><strong>${dayData.day_name}</strong>, ${dayData.day_month}</button>`;
+            }).join('');
+        }
+
+        function renderTimes(dateKey) {
+            const dayData = availableSlots[dateKey];
+            if (!timeColumn || !dayData || !dayData.slots || dayData.slots.length === 0) {
+                if(timeColumn) timeColumn.innerHTML = '<div class="flex items-center justify-center h-full text-slate-400"><p>Nenhum horário para este dia.</p></div>';
+                return;
+            }
+            if(timePlaceholder) timePlaceholder.style.display = 'none';
+            
+            timeColumn.innerHTML = dayData.slots.map(slot => 
+                `<button data-slot='${JSON.stringify(slot)}' data-day-name='${dayData.day_name}' data-date-str='${dateKey}' class="time-btn w-full text-center p-3 rounded-lg">${slot.time_str}</button>`
+            ).join('');
+        }
+
+        // --- EVENT LISTENERS DO AGENDADOR ---
+        if (dateColumn) {
+            dateColumn.addEventListener('click', e => {
+                const button = e.target.closest('.date-btn');
+                if (button) {
+                    document.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                    renderTimes(button.dataset.date);
+                }
+            });
+        }
+
+        if (timeColumn) {
+            timeColumn.addEventListener('click', e => {
+                const button = e.target.closest('.time-btn');
+                if (button) {
+                    const slot = JSON.parse(button.dataset.slot);
+                    showModal(slot, button.dataset.dayName, button.dataset.dateStr);
+                }
+            });
+        }
+
+        if (modalCancelBtn) modalCancelBtn.addEventListener('click', hideModal);
+
+        if (modalConfirmBtn) {
+            modalConfirmBtn.addEventListener('click', async () => {
+                const email = modalEmailInput ? modalEmailInput.value.trim() : userInfo.email;
+                if (!email || !/\S+@\S+\.\S+/.test(email)) {
+                    if(modalError) {
+                        modalError.textContent = 'Por favor, insira um e-mail válido.';
+                        modalError.classList.remove('hidden');
+                    }
+                    return;
+                }
+                if(modalError) modalError.classList.add('hidden');
+                setModalLoading(true);
+
+                try {
+                    const response = await fetch('/book_slot', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            slot_info: selectedSlot,
+                            user_info: { ...userInfo, email: email },
+                            doc_id: '{{ doc_id }}' 
+                        })
+                    });
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        hideModal();
+                        if(schedulerPanel) schedulerPanel.style.display = 'none';
+                        if(successPanel) successPanel.classList.remove('hidden');
+                    } else {
+                        if(modalError) {
+                            modalError.textContent = result.message || 'Ocorreu um erro ao agendar. Tente novamente.';
+                            modalError.classList.remove('hidden');
+                        }
+                    }
+                } catch (error) {
+                     if(modalError) {
+                        modalError.textContent = 'Erro de comunicação com o servidor. Verifique sua conexão.';
+                        modalError.classList.remove('hidden');
+                    }
+                } finally {
+                    setModalLoading(false);
+                }
+            });
+        }
+
+        // --- LÓGICA DO CUPOM ---
+        if (copyCouponBtn) {
+            copyCouponBtn.addEventListener('click', () => {
+                const couponCode = couponCodeEl.textContent;
+                navigator.clipboard.writeText(couponCode).then(() => {
+                    const originalText = copyCouponBtn.textContent;
+                    copyCouponBtn.textContent = 'Copiado!';
+                    if (copyFeedbackEl) {
+                        copyFeedbackEl.classList.remove('hidden');
+                    }
+                    
+                    setTimeout(() => {
+                        copyCouponBtn.textContent = originalText;
+                        if (copyFeedbackEl) {
+                           copyFeedbackEl.classList.add('hidden');
+                        }
+                        window.open('https://www.movemind.pro', '_blank');
+                    }, 1500); 
+
+                }).catch(err => {
+                    console.error('Falha ao copiar o cupão: ', err);
+                    alert('Não foi possível copiar o cupão.');
+                });
+            });
+        }
+
+        // --- INICIALIZAÇÃO ---
+        renderDates();
+    });
+    </script>
+
+        if (copyButton) {
+            copyButton.addEventListener('click', () => {
+                const couponCode = couponCodeEl.innerText;
+                navigator.clipboard.writeText(couponCode).then(() => {
+                    copyFeedbackEl.classList.remove('hidden');
+                    setTimeout(() => {
+                        copyFeedbackEl.classList.add('hidden');
+                    }, 2000);
+                    
+                    // Redireciona para a página da Movemind em uma nova aba
+                    window.open('https://www.movemind.pro', '_blank');
+
+                }).catch(err => {
+                    console.error('Erro ao copiar o cupom: ', err);
+                    alert('Não foi possível copiar o código. Por favor, tente manualmente.');
+                });
+            });
+        }
+
+        // Inicializa a renderização das datas
+        renderDates();
+    });
+    </script>        const hideModal = () => modal.classList.add('hidden');
+        const setModalLoading = (isLoading) => {
+            if(isLoading) {
+                modalSpinner.classList.remove('hidden');
+                modalConfirmBtn.disabled = true;
+                modalConfirmBtn.classList.add('opacity-50');
+            } else {
+                modalSpinner.classList.add('hidden');
+                modalConfirmBtn.disabled = false;
+                modalConfirmBtn.classList.remove('opacity-50');
+            }
+        }
+
+        if(dateButtons.length > 0) {
+            dateButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const selectedDate = btn.dataset.date;
+                    document.querySelector('.date-select-btn.bg-amber-500')?.classList.remove('bg-amber-500', 'text-white');
+                    btn.classList.add('bg-amber-500', 'text-white');
+
+                    const dayData = availableSlots.find(d => d.date === selectedDate);
+                    timeColumn.innerHTML = ''; 
+
+                    const timePlaceholder = document.createElement('p');
+                    timePlaceholder.className = 'text-slate-400 text-center py-10';
+                    timePlaceholder.textContent = 'Não há horários disponíveis para este dia.';
+        const copyFeedback = document.getElementById('copy-feedback');
+        copyBtn.addEventListener('click', () => {
+            const couponText = document.getElementById('coupon-code').innerText;
+            navigator.clipboard.writeText(couponText).then(() => {
+                copyFeedback.classList.remove('hidden');
+                setTimeout(() => {
+                    copyFeedback.classList.add('hidden');
+                }, 2000);
+                window.open('https://www.movemind.pro', '_blank');
+            }, (err) => {
+                alert('Erro ao copiar o cupão. Por favor, tente manualmente.');
+                console.error('Erro ao copiar: ', err);
+            });
+        });
+    }
+});
+</script>
+
+</body>
+</html>

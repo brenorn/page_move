@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: movemind-flask
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 2 -b 0.0.0.0:$PORT 'flaskr:create_app'
+    envVars:
+      # Defina estas variáveis no painel do Render ou aqui (sem segredos em Git público!)
+      - key: FLASK_ENV
+        value: production
+      - key: TZ
+        value: America/Sao_Paulo
+    secretFiles:
+      - name: google-credentials.json
+        mountPath: /etc/secrets/google-credentials.json
+    autoDeploy: true

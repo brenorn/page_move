@@ -1,0 +1,28 @@
+# ===================================================================
+# ARQUIVO requirements.txt
+# VERSÃO 8.0: Trocada para a biblioteca 'pipedrive-api' funcional.
+# ===================================================================
+
+# --- Framework Principal ---
+Flask==3.0.3
+gunicorn==22.0.0
+
+# --- Comunicação e Utilitários ---
+requests==2.32.3
+python-dotenv==1.0.1
+pytz==2024.1
+
+# --- Geração de Gráficos ---
+matplotlib==3.9.0
+numpy==1.26.4
+
+# --- Integração Google Cloud & APIs ---
+google-cloud-firestore==2.16.0
+google-cloud-storage==2.16.0
+google-api-python-client==2.134.0
+google-auth-oauthlib==1.2.0
+google-cloud-secret-manager==2.20.0
+google-auth-httplib2==0.2.0
+
+# --- Integração com CRMs (Pipedrive) ---
+# CORRIGIDO: Usando a biblioteca moderna e funcional.

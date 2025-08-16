@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agendar com Movemind</title>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    .container { max-width: 980px; margin: 0 auto; padding: 16px; }
+    .header { margin-bottom: 12px; }
+    .embed-wrap { height: 900px; border: 0; }
+    @media (max-width: 768px) { .embed-wrap { height: 1100px; } }
+  </style>
+  <script>
+    function irParaCal() {
+      const url = '{{ cal_link_ext }}';
+      window.open(url, '_blank', 'noopener');
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Agendar reunião</h1>
+      <p>Clique no botão abaixo para abrir a página de agendamento.</p>
+    </div>
+    <button onclick="irParaCal()" style="padding:12px 20px; font-size:16px; cursor:pointer;">Fazer meu agendamento</button>
+  </div>
+</body>
+</html>

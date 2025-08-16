@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico de Cultura - Descontaminação Mental</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0D1117;
+            color: #E6EDF3;
+        }
+       .brand-orange {
+            background-color: #ff9929;
+            color: #0D1117;
+        }
+       .brand-orange:hover:not(:disabled) {
+            background-color: #ffaf5a;
+        }
+       .brand-orange:disabled {
+            background-color: #484f58;
+            cursor: not-allowed;
+        }
+       .step-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transform: translateY(20px);
+        }
+       .step-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+       .progress-bar-fill {
+            transition: width 0.5s ease-in-out;
+        }
+        input[type='range'] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #30363d;
+            border-radius: 5px;
+            outline: none;
+        }
+        input[type='range']::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #ff9929;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 3px solid #0D1117;
+        }
+        input[type='range']::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: #ff9929;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 3px solid #0D1117;
+        }
+       .form-input {
+            background-color: #010409;
+            border: 1px solid #30363d;
+            color: #E6EDF3;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+       .form-input:focus {
+            outline: none;
+            border-color: #ff9929;
+            box-shadow: 0 0 0 3px rgba(255, 153, 41, 0.3);
+        }
+        .form-input.border-red-500 {
+            border-color: #ef4444;
+        }
+        .profile-btn {
+            background-color: #30363d;
+            border: 1px solid #484f58;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .profile-btn.active, .profile-btn:hover {
+            background-color: #ff9929;
+            color: #0D1117;
+            border-color: #ff9929;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="container mx-auto px-6 py-8">
+        <a href="{{ url_for('main.landing') }}">
+            <img src="{{ url_for('static', filename='images/Programa.png') }}" alt="Logo Descontaminação Mental" class="h-12 mx-auto">
+        </a>
+    </header>
+
+    <div class="w-full max-w-6xl mx-auto bg-slate-900/50 rounded-2xl shadow-2xl p-8 md:p-12" style="backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1);">
+        
+        <div id="header-container">
+            <h1 class="text-2xl md:text-3xl font-bold text-center mb-2">Diagnóstico Gratuito da Sua Cultura</h1>
+            <p class="text-center text-gray-400 mb-8">Você está a poucos passos de descobrir os pontos cegos da sua cultura.</p>
+        </div>
+
+        <div class="mb-12">
+            <div class="w-full bg-gray-700 rounded-full h-2.5">
+                <div id="progressBar" class="bg-[#ff9929] h-2.5 rounded-full progress-bar-fill" style="width: 20%"></div>
+            </div>
+            <div class="flex justify-between text-xs text-gray-400 mt-2">
+                <span id="step-label-1" class="font-bold text-white">Informações</span>
+                <span id="step-label-2">Questionário</span>
+                <span id="step-label-3">Resultados</span>
+                <span id="step-label-4">Análise SWOT</span>
+                <span id="step-label-5">Finalização</span>
+            </div>
+        </div>
+
+        <form id="multi-step-form" novalidate>
+            <!-- Campos ocultos para dados automáticos -->
+            <input type="hidden" id="submission_timestamp" name="submission_timestamp">
+            <input type="hidden" id="user_timezone" name="user_timezone">
+
+            <!-- Step 1: User Info -->
+            <div id="step-1" class="step-section active">
+                <h2 class="text-xl font-semibold mb-6 text-center">Primeiro, vamos nos conhecer.</h2>
+                <div class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-300 mb-1">Seu nome</label>
+                            <input type="text" id="name" name="name" required class="form-input w-full p-3 rounded-md">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-300 mb-1">E-mail Corporativo</label>
+                            <input type="email" id="email" name="email" required class="form-input w-full p-3 rounded-md">
+                        </div>
+                    </div>
+                     <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="cargo" class="block text-sm font-medium text-gray-300 mb-1">Seu Cargo</label>
+                            <select id="cargo" name="cargo" required class="form-input w-full p-3 rounded-md">
+                                <option value="" disabled selected>Selecione seu cargo</option>
+                                <option value="c-level">C-Level (CEO, CTO, CMO, etc.)</option>
+                                <option value="diretor">Diretor(a)</option>
+                                <option value="gerente">Gerente / Coordenador(a)</option>
+                                <option value="analista">Analista / Especialista</option>
+                                <option value="outro">Outro</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="company" class="block text-sm font-medium text-gray-300 mb-1">Empresa</label>
+                            <input type="text" id="company" name="company" required class="form-input w-full p-3 rounded-md">
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="segmento" class="block text-sm font-medium text-gray-300 mb-1">Segmento da Empresa</label>
+                            <select id="segmento" name="segmento" required class="form-input w-full p-3 rounded-md">
+                                <option value="" disabled selected>Selecione o segmento</option>
+                                <option value="tecnologia">Tecnologia / SaaS</option>
+                                <option value="servicos">Serviços (Consultoria, Agência, etc.)</option>
+                                <option value="varejo">Varejo / E-commerce</option>
+                                <option value="industria">Indústria / Manufatura</option>
+                                <option value="saude">Saúde</option>
+                                <option value="educacao">Educação</option>
+                                <option value="outro">Outro</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="num_funcionarios" class="block text-sm font-medium text-gray-300 mb-1">Nº de Funcionários</label>
+                            <select id="num_funcionarios" name="num_funcionarios" required class="form-input w-full p-3 rounded-md">
+                                <option value="" disabled selected>Selecione o número</option>
+                                <option value="1-10">1-10</option>
+                                <option value="11-50">11-50</option>
+                                <option value="51-200">51-200</option>
+                                <option value="201-500">201-500</option>
+                                <option value="501-1000">501-1000</option>
+                                <option value="1001+">1001+</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="website" class="block text-sm font-medium text-gray-300 mb-1">Site da Empresa</label>
+                            <input type="url" id="website" name="website" placeholder="https://..." class="form-input w-full p-3 rounded-md">
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-300 mb-1">WhatsApp (Opcional)</label>
+                            <input type="tel" id="phone" name="phone" placeholder="(XX) XXXXX-XXXX" class="form-input w-full p-3 rounded-md" maxlength="15">
+                        </div>
+                    </div>
+                    <div class="pt-4">
+                        <div class="flex items-start">
+                            <input id="consent" name="consent" type="checkbox" required class="h-4 w-4 mt-1 rounded border-gray-600 text-[#ff9929] focus:ring-[#ff9929]">
+                            <label for="consent" class="ml-3 text-sm text-gray-400">
+                                Eu concordo em receber comunicações e autorizo o uso das minhas informações para a geração do diagnóstico, conforme a nossa <a href="#" class="font-medium text-[#ff9929] hover:underline">Política de Privacidade</a>.
+                            </label>
+                        </div>
+                    </div>
+                     <div class="text-center pt-6">
+                        <button type="button" data-action="next" class="brand-orange font-bold py-3 px-10 rounded-lg text-lg transition-transform transform hover:scale-105">
+                            Acessar Diagnóstico
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Questionnaire -->
+            <div id="step-2" class="step-section">
+                <h2 class="text-xl font-semibold mb-6 text-center">Avalie as afirmações de 0 (discordo totalmente) a 10 (concordo totalmente).</h2>
+                <div id="quiz-container" class="space-y-10">
+                    <!-- Questions will be injected here -->
+                </div>
+                <div class="flex justify-between mt-12">
+                     <button type="button" data-action="back" class="text-gray-400 font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 hover:text-white">
+                        &larr; Voltar
+                    </button>
+                    <button type="button" data-action="next" class="brand-orange font-bold py-3 px-10 rounded-lg text-lg transition-transform transform hover:scale-105">
+                        Gerar Meu Gráfico
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Results (Chart & Comparison) -->
+            <div id="step-3" class="step-section">
+                 <h2 class="text-xl font-semibold mb-2 text-center">Seu Diagnóstico de Cultura está pronto.</h2>
+                 <p class="text-center text-gray-400 mb-8">Veja a "forma" da sua cultura e compare com perfis ideais.</p>
+                 <div class="grid lg:grid-cols-2 gap-8 items-start">
+                    <!-- Coluna 1: Gráfico (Fixo na tela) -->
+                    <div class="lg:sticky top-8">
+                        <div class="bg-gray-900 p-6 rounded-lg">
+                            <canvas id="radarChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Coluna 2: Painel Interativo (Rolável) -->
+                    <div class="space-y-6">
+                        <div id="comparison-container" class="bg-gray-900 p-6 rounded-lg">
+                            <h3 class="font-semibold mb-4">Compare com perfis de cultura:</h3>
+                            <div id="profile-buttons" class="flex flex-wrap gap-2 mb-4">
+                                <!-- Profile buttons will be injected here -->
+                            </div>
+                            <div id="recommendation-text" class="text-sm text-gray-400 bg-gray-800 p-4 rounded-md min-h-[100px]">
+                                <!-- Recommendation text will appear here -->
+                            </div>
+                        </div>
+                         <div class="bg-gray-900 p-6 rounded-lg">
+                            <h3 class="font-semibold mb-2">Resumo Rápido</h3>
+                            <p class="text-sm text-gray-400"><strong>Ponto Forte:</strong> <span id="strong-point" class="text-green-400"></span></p>
+                            <p class="text-sm text-gray-400"><strong>Ponto de Desenvolvimento:</strong> <span id="weak-point" class="text-yellow-400"></span></p>
+                         </div>
+                    </div>
+                 </div>
+                 <div class="flex justify-between mt-12">
+                     <button type="button" data-action="back" class="text-gray-400 font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 hover:text-white">
+                        &larr; Voltar
+                    </button>
+                    <button type="button" data-action="next" class="brand-orange font-bold py-3 px-10 rounded-lg text-lg transition-transform transform hover:scale-105">
+                        Aprofundar Análise &rarr;
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: SWOT Analysis -->
+            <div id="step-4" class="step-section">
+                 <h2 class="text-xl font-semibold mb-2 text-center">Vamos aprofundar a análise.</h2>
+                <p class="text-center text-gray-400 mb-8">Com base nos seus resultados, reflita sobre os seguintes pontos.</p>
+                <div class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <label id="swot-strengths-label" for="swot-strengths" class="block text-sm font-bold text-green-400 mb-2">Forças</label>
+                            <textarea id="swot-strengths" name="swot-strengths" rows="6" class="form-input w-full p-3 rounded-md" placeholder="O que sua equipe faz excepcionalmente bem?"></textarea>
+                        </div>
+                        <div>
+                            <label id="swot-weaknesses-label" for="swot-weaknesses" class="block text-sm font-bold text-red-400 mb-2">Fraquezas</label>
+                            <textarea id="swot-weaknesses" name="swot-weaknesses" rows="6" class="form-input w-full p-3 rounded-md" placeholder="Quais são os principais obstáculos?"></textarea>
+                        </div>
+                        <div>
+                            <label for="swot-opportunities" class="block text-sm font-bold text-blue-400 mb-2">Oportunidades</label>
+                            <textarea id="swot-opportunities" name="swot-opportunities" rows="6" class="form-input w-full p-3 rounded-md" placeholder="Que tendências de mercado podem ser aproveitadas?"></textarea>
+                        </div>
+                        <div>
+                            <label for="swot-threats" class="block text-sm font-bold text-yellow-400 mb-2">Ameaças</label>
+                            <textarea id="swot-threats" name="swot-threats" rows="6" class="form-input w-full p-3 rounded-md" placeholder="Que fatores externos podem prejudicar o negócio?"></textarea>
+                        </div>
+                    </div>
+                </div>
+                 <div class="flex justify-between mt-12">
+                     <button type="button" data-action="back" class="text-gray-400 font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 hover:text-white">
+                        &larr; Voltar
+                    </button>
+                    <button type="button" data-action="next" id="final-submit-btn" class="brand-orange font-bold py-3 px-10 rounded-lg text-lg transition-transform transform hover:scale-105">
+                        Finalizar Diagnóstico
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 5: Final Confirmation (agora usado como tela de carregamento) -->
+            <div id="step-5" class="step-section">
+                <div class="text-center">
+                    <svg class="mx-auto h-16 w-16 text-[#ff9929] animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <h2 class="mt-4 text-2xl font-bold">Processando seu Diagnóstico...</h2>
+                    <p class="mt-2 text-gray-400 max-w-md mx-auto">Estamos compilando seus dados e gerando seu relatório personalizado. Isso levará apenas um instante.</p>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <footer class="text-center mt-12 py-8 border-t border-slate-800">
+        <a href="https://movemind.pro" target="_blank" rel="noopener noreferrer">
+            <img src="{{ url_for('static', filename='images/LOGO_MOVEMIND.png') }}" alt="Logo Movemind" class="h-10 mx-auto mb-4 opacity-70 hover:opacity-100 transition-opacity">
+        </a>
+        <p class="text-slate-500 text-sm">&copy; 2025 Movemind. Todos os direitos reservados.</p>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- DATA & CONFIGURATION ---
+    const dimensions = [
+        { id: 'motivation', name: 'Motivação', questions: ["Sinto-me motivado(a) para realizar minhas tarefas diárias.", "Meu trabalho é reconhecido e sinto que ele tem um propósito claro.", "O reconhecimento (financeiro ou não) que recebo está alinhado com minhas contribuições."] },
+        { id: 'communication', name: 'Comunicação', questions: ["A comunicação da liderança sobre os objetivos da empresa é clara.", "Sinto-me à vontade para dar feedback e expressar minhas opiniões.", "A colaboração e a comunicação entre as diferentes áreas funcionam bem."] },
+        { id: 'retention', name: 'Retenção', questions: ["Eu me vejo trabalhando nesta empresa nos próximos anos.", "A empresa oferece benefícios e compensações competitivas.", "Vejo um plano de carreira e oportunidades de crescimento para mim aqui."] },
+        { id: 'innovation', name: 'Inovação', questions: ["Somos incentivados a experimentar novas abordagens e a assumir riscos calculados.", "Temos tempo e recursos para explorar novas ideias.", "As boas ideias são rapidamente transformadas em projetos ou ações."] },
+        { id: 'climate', name: 'Clima Organizacional', questions: ["O ambiente de trabalho é positivo e respeitoso.", "Confio nos meus colegas e na minha liderança.", "A empresa promove um bom equilíbrio entre a vida profissional e pessoal."] },
+        { id: 'productivity', name: 'Produtividade', questions: ["Tenho as ferramentas e os recursos necessários para fazer meu trabalho com eficiência.", "Os processos e fluxos de trabalho são claros e eficazes.", "Consigo focar nas minhas tarefas sem interrupções excessivas."] },
+        { id: 'sustainability', name: 'Sustentabilidade e Gestão de Recursos', questions: ["A empresa demonstra otimização e uso eficiente de seus recursos (financeiros, materiais, tempo)?", "Os colaboradores sentem que a empresa possui uma base sólida e estável para o futuro?", "A empresa investe consistentemente em seu crescimento e inovação?"] }
+    ];
+    const idealProfiles = {
+        'Mudança Cultural': { 'motivation': 8, 'communication': 9, 'retention': 8, 'innovation': 9, 'climate': 8, 'productivity': 9, 'sustainability': 9 },
+        'Engajamento': { 'motivation': 10, 'communication': 8, 'retention': 10, 'innovation': 8, 'climate': 9, 'productivity': 9, 'sustainability': 8 },
+        'Times Fortes': { 'motivation': 9, 'communication': 9, 'retention': 9, 'innovation': 9, 'climate': 10, 'productivity': 9, 'sustainability': 8 },
+        'Resultados': { 'motivation': 9, 'communication': 9, 'retention': 8, 'innovation': 8, 'climate': 7, 'productivity': 10, 'sustainability': 9 },
+        'Futuro': { 'motivation': 8, 'communication': 9, 'retention': 9, 'innovation': 9, 'climate': 9, 'productivity': 8, 'sustainability': 9 }
+    };
+    const recommendationTexts = {
+        'Mudança Cultural': 'Ideal para empresas em transição. O objetivo é alinhar a equipe com uma nova visão, otimizando processos e incentivando a inovação.',
+        'Engajamento': 'Essencial para reter talentos e elevar a moral. Foca em fortalecer a conexão emocional dos colaboradores com a empresa.',
+        'Times Fortes': 'Voltado para criar um ambiente de alta confiança e segurança psicológica, melhorando a colaboração e a comunicação interna.',
+        'Resultados': 'Perfeito para organizações que buscam mais eficiência e alinhamento com os objetivos de negócio, focando em metas claras e autonomia.',
+        'Futuro': 'Prepara a empresa para as novas dinâmicas de trabalho, incluindo modelos flexíveis, inteligência emocional e uso de dados.'
+    };
+    const validDDDs = [
+        '11', '12', '13', '14', '15', '16', '17', '18', '19', '21', '22', 
+        '24', '27', '28', '31', '32', '33', '34', '35', '37', '38', '41', 
+        '42', '43', '44', '45', '46', '47', '48', '49', '51', '53', '54', 
+        '55', '61', '62', '63', '64', '65', '66', '67', '68', '69', '71', 
+        '73', '74', '75', '77', '79', '81', '82', '83', '84', '85', '86', 
+        '87', '88', '89', '91', '92', '93', '94', '95', '96', '97', '98', '99'
+    ];
+    // --- STATE MANAGEMENT ---
+    const state = {
+        currentStep: 1,
+        totalSteps: 5,
+        formData: {},
+        userAverages: {},
+        liveRadarChart: null,
+    };
+    // --- DOM ELEMENTS ---
+    const form = document.getElementById('multi-step-form');
+    const progressBar = document.getElementById('progressBar');
+    const phoneInput = document.getElementById('phone');
+    
+    // --- FUNCTIONS ---
+    function formatPhone(value) {
+        if (!value) return "";
+        value = value.replace(/\D/g,'');
+        value = value.replace(/(\d{2})(\d)/,"($1) $2");
+        value = value.replace(/(\d)(\d{4})$/,"$1-$2");
+        return value;
+    }
+    function validateStep1() {
+        let isValid = true;
+        const requiredFields = form.querySelectorAll('#step-1 [required]');
+        
+        requiredFields.forEach(field => {
+            field.classList.remove('border-red-500');
+            let fieldIsValid = true;
+
+            if (field.type === 'checkbox') {
+                if (!field.checked) fieldIsValid = false;
+            } else if (field.type === 'email') {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(field.value)) {
+                    fieldIsValid = false;
+                }
+            } else {
+                if (field.value.trim() === '') fieldIsValid = false;
+            }
+            
+            if (!fieldIsValid) {
+                isValid = false;
+                field.classList.add('border-red-500');
+            }
+        });
+        const phoneValue = phoneInput.value;
+        phoneInput.classList.remove('border-red-500');
+        if (phoneValue) {
+            const justDigits = phoneValue.replace(/\D/g, '');
+            const ddd = justDigits.substring(0, 2);
+            
+            if (justDigits.length !== 11 || justDigits[2] !== '9' || !validDDDs.includes(ddd)) {
+                isValid = false;
+                phoneInput.classList.add('border-red-500');
+                alert('Por favor, insira um número de celular brasileiro válido no formato (XX) 9XXXX-XXXX.');
+            }
+        }
+        if (!isValid && !phoneInput.classList.contains('border-red-500')) {
+            alert('Por favor, preencha todos os campos obrigatórios e aceite os termos.');
+        }
+        return isValid;
+    }
+    function initializeQuiz() {
+        const quizContainer = document.getElementById('quiz-container');
+        if (!quizContainer) return;
+        let quizHtml = '';
+        dimensions.forEach((dim, dimIndex) => {
+            quizHtml += `<div class="p-6 bg-gray-800/50 rounded-lg"><h3 class="text-xl font-bold text-[#ff9929] mb-4">${dim.name}</h3>`;
+            dim.questions.forEach((q, qIndex) => {
+                const qName = `q-${dim.id}-${qIndex}`;
+                quizHtml += `
+                    <div class="mb-6">
+                        <label for="${qName}" class="block text-gray-300 mb-3">${q}</label>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sm text-gray-400">0</span>
+                            <input type="range" id="${qName}" name="${qName}" min="0" max="10" value="5" class="w-full">
+                            <span class="text-sm text-gray-400">10</span>
+                            <span id="val-${qName}" class="font-bold text-[#ff9929] w-8 text-center">5</span>
+                        </div>
+                    </div>`;
+            });
+            quizHtml += `</div>`;
+        });
+        quizContainer.innerHTML = quizHtml;
+        quizContainer.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', (e) => {
+                document.getElementById(`val-${e.target.id}`).textContent = e.target.value;
+            });
+        });
+    }
+    function initializeResultControls() {
+        const profileButtonsContainer = document.getElementById('profile-buttons');
+        if(!profileButtonsContainer) return;
+        let buttonsHtml = '<button type="button" class="profile-btn active py-2 px-3 rounded-md text-sm" data-profile="none">Seu Resultado</button>';
+        Object.keys(idealProfiles).forEach(key => {
+            buttonsHtml += `<button type="button" class="profile-btn py-2 px-3 rounded-md text-sm" data-profile="${key}">${key}</button>`;
+        });
+        profileButtonsContainer.innerHTML = buttonsHtml;
+        profileButtonsContainer.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                const profileKey = e.target.dataset.profile;
+                updateChart(profileKey === 'none' ? null : profileKey);
+                document.querySelectorAll('.profile-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                const recommendationEl = document.getElementById('recommendation-text');
+                recommendationEl.textContent = recommendationTexts[profileKey] || 'Passe o mouse sobre os pontos do gráfico para insights detalhados.';
+            }
+        });
+    }
+    function updateProgressBar() {
+        const progress = ((state.currentStep -1) / (state.totalSteps - 1)) * 100;
+        progressBar.style.width = `${progress}%`;
+        for (let i = 1; i <= state.totalSteps; i++) {
+            const label = document.getElementById(`step-label-${i}`);
+            if (label) {
+                label.classList.toggle('font-bold', i === state.currentStep);
+                label.classList.toggle('text-white', i === state.currentStep);
+            }
+        }
+    }
+    function goToStep(stepNumber) {
+        if (stepNumber < 1 || stepNumber > state.totalSteps) return;
+        const currentSection = document.getElementById(`step-${state.currentStep}`);
+        const nextSection = document.getElementById(`step-${stepNumber}`);
+        if (currentSection && nextSection) {
+            currentSection.classList.remove('active');
+            setTimeout(() => {
+                state.currentStep = stepNumber;
+                nextSection.classList.add('active');
+                updateProgressBar();
+                window.scrollTo(0, 0);
+            }, 300);
+        }
+    }
+    function calculateAverages() {
+        const formData = new FormData(form);
+        const scores = {};
+        dimensions.forEach(dim => scores[dim.id] = []);
+        for(const [key, value] of formData.entries()) {
+            if(key.startsWith('q-')) {
+                const dimId = key.split('-')[1];
+                scores[dimId].push(parseInt(value, 10));
+            }
+        }
+        const averages = {};
+        for (const dimId in scores) {
+            const dimScores = scores[dimId];
+            averages[dimId] = dimScores.length > 0 ? dimScores.reduce((a, b) => a + b, 0) / dimScores.length : 0;
+        }
+        state.userAverages = averages;
+    }
+    function updateChart(comparisonProfileKey = null) {
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        const labels = dimensions.map(d => d.name);
+        const userData = dimensions.map(d => state.userAverages[d.id]);
+        const datasets = [{
+            label: 'Seu Resultado',
+            data: userData,
+            backgroundColor: 'rgba(255, 153, 41, 0.2)',
+            borderColor: '#ff9929',
+            pointBackgroundColor: '#ff9929',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: '#ff9929',
+            borderWidth: 2,
+        }];
+        if (comparisonProfileKey && idealProfiles[comparisonProfileKey]) {
+            const comparisonData = dimensions.map(d => idealProfiles[comparisonProfileKey][d.id]);
+            datasets.push({
+                label: `Perfil: ${comparisonProfileKey}`,
+                data: comparisonData,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgb(54, 162, 235)',
+                pointBackgroundColor: 'rgb(54, 162, 235)',
+                borderWidth: 1,
+            });
+        }
+        if (state.liveRadarChart) state.liveRadarChart.destroy();
+        state.liveRadarChart = new Chart(ctx, {
+            type: 'radar',
+            data: { labels, datasets },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255, 255, 255, 0.2)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                        pointLabels: { color: '#E6EDF3', font: { size: 12 } },
+                        suggestedMin: 0,
+                        suggestedMax: 10,
+                        ticks: { backdropColor: '#0D1117', color: '#E6EDF3' }
+                    }
+                },
+                plugins: { legend: { labels: { color: '#E6EDF3' } } }
+            }
+        });
+    }
+    function displayResultsSummary() {
+        const scoresArray = Object.entries(state.userAverages).map(([id, score]) => ({ 
+            name: dimensions.find(d => d.id === id).name, 
+            score 
+        }));
+        scoresArray.sort((a, b) => a.score - b.score);
+        const lowest = scoresArray[0];
+        const highest = scoresArray[scoresArray.length - 1];
+        document.getElementById('strong-point').textContent = `${highest.name} (${highest.score.toFixed(1)})`;
+        document.getElementById('weak-point').textContent = `${lowest.name} (${lowest.score.toFixed(1)})`;
+    }
+    function setSwotCoachingPrompts() {
+         const scoresArray = Object.entries(state.userAverages).map(([id, score]) => ({ 
+            name: dimensions.find(d => d.id === id).name, 
+            score 
+        }));
+        scoresArray.sort((a, b) => a.score - b.score);
+        const highestDim = scoresArray[scoresArray.length - 1].name;
+        const lowestDim = scoresArray[0].name;
+        document.getElementById('swot-strengths-label').textContent = `Forças (Sua maior pontuação foi em ${highestDim})`;
+        document.getElementById('swot-weaknesses-label').textContent = `Fraquezas (Seu maior desafio parece ser ${lowestDim})`;
+    }
+    // --- EVENT LISTENERS ---
+    phoneInput.addEventListener('input', (e) => {
+        e.target.value = formatPhone(e.target.value);
+    });
+    form.addEventListener('click', async (e) => {
+        const action = e.target.dataset.action;
+        if (!action) return;
+        if (action === 'next') {
+            if (state.currentStep === 1 && !validateStep1()) return;
+            if (state.currentStep === 2) {
+                calculateAverages();
+                updateChart();
+                displayResultsSummary();
+            }
+            if (state.currentStep === 3) {
+                setSwotCoachingPrompts();
+            }
+            if (state.currentStep === 4) {
+                const submitBtn = document.getElementById('final-submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+                
+                goToStep(5); // Mostra a tela de carregamento
+
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                
+                try {
+                    const response = await fetch('/api/submit_diagnosis', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    if (response.ok && result.report_url) {
+                        window.location.href = result.report_url;
+                    } else {
+                        alert('Ocorreu um erro ao gerar seu relatório. Tente novamente.');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Finalizar Diagnóstico';
+                        goToStep(4); // Volta para a etapa anterior
+                    }
+                } catch (error) {
+                    alert('Ocorreu um erro de conexão. Verifique sua rede e tente novamente.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Finalizar Diagnóstico';
+                    goToStep(4);
+                }
+                return;
+            }
+            goToStep(state.currentStep + 1);
+        } else if (action === 'back') {
+            goToStep(state.currentStep - 1);
+        }
+    });
+    // --- INITIALIZATION ---
+    initializeQuiz();
+    initializeResultControls();
+});
+</script>
+
+</body>
+</html>
