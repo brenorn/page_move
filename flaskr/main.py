@@ -18,6 +18,7 @@ from io import BytesIO
 from urllib.parse import urlencode, urlparse
 
 import matplotlib
+matplotlib.use('Agg')  # headless backend for Render/servers
 import matplotlib.pyplot as plt
 import numpy as np
 import pytz
@@ -63,9 +64,8 @@ try:
     db = firestore.Client(database=FIRESTORE_DATABASE_ID)
     print('>>> [MAIN] Conexão com Firestore estabelecida com sucesso.')
 except Exception as e:
-    print(f'>>> [MAIN] ERRO CRÍTICO ao conectar com Firestore: {e}')
-    # Lançar o erro pode ser uma boa ideia para parar a execução claramente
-    raise e
+    print(f'>>> [MAIN] AVISO: Falha ao conectar com Firestore: {e}. Continuando sem Firestore (modo degradado).')
+    db = None
 
 try:
     locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
@@ -152,6 +152,8 @@ def diagnostico():
 
 @bp.route('/relatorio/<string:doc_id>')
 def generate_real_report(doc_id):
+    if db is None:
+        abort(503, description="Serviço de relatório temporariamente indisponível (Firestore não configurado).")
     try:
         report_ref = db.collection('diagnoses').document(doc_id)
         report_data = report_ref.get().to_dict()
@@ -210,12 +212,15 @@ def submit_diagnosis():
     # Cria um ID de documento mais seguro e universal
     doc_id = lead_email.replace('@', '_').replace('.', '_')
     
-    try:
-        doc_ref = db.collection('diagnoses').document(doc_id)
-        doc_ref.set(data, merge=True)
-    except Exception as e:
-        print(f"ERRO: Não foi possível salvar no Firestore: {e}")
-        return jsonify({"status": "error", "message": "Não foi possível salvar os dados"}), 500
+    if db is not None:
+        try:
+            doc_ref = db.collection('diagnoses').document(doc_id)
+            doc_ref.set(data, merge=True)
+        except Exception as e:
+            print(f"ERRO: Não foi possível salvar no Firestore: {e}")
+            return jsonify({"status": "error", "message": "Não foi possível salvar os dados"}), 500
+    else:
+        print("AVISO: Firestore indisponível; pulando persistência (modo degradado).")
 
     update_pipedrive_deal(data)
     report_url = url_for('main.generate_real_report', doc_id=doc_id, _external=True)
